@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teste DISC – BNI Edition</title>
+  <style>
+    :root{
+      --bni-red:#8A1538; /* BNI wine red */
+      --bni-red-700:#6d102d;
+      --bni-gray-900:#111827;
+      --bni-gray-700:#374151;
+      --bni-gray-500:#6B7280;
+      --bni-gray-200:#E5E7EB;
+      --bg:#F8F7F9;
+      --ok:#0E7C3A;
+      --warn:#B45309;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--bni-gray-900)}
+    header{
+      background:linear-gradient(135deg,var(--bni-red),var(--bni-red-700));
+      color:#fff;padding:28px 16px 36px;border-bottom:6px solid #fff;position:sticky;top:0;z-index:10
+    }
+    .container{max-width:1050px;margin:-28px auto 80px;background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(17,24,39,.12);overflow:hidden}
+    .content{padding:28px}
+    h1{margin:0 0 6px;font-size:28px;letter-spacing:.3px}
+    .subtitle{margin:0;color:#FDE68A}
+    .badge{display:inline-block;background:#fff;color:var(--bni-red);padding:4px 10px;border-radius:999px;font-weight:700;font-size:12px;margin-top:10px}
+    .grid{display:grid;gap:18px}
+    @media(min-width:900px){.grid{grid-template-columns:1.1fr .9fr}}
+    .card{background:#fff;border:1px solid var(--bni-gray-200);border-radius:16px;padding:18px}
+    .card h2{margin-top:0;color:var(--bni-red)}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 14px}
+    .legend span{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--bni-gray-200);font-size:12px}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .d{background:var(--bni-red)}
+    .i{background:#C84A5D}
+    .s{background:#6B7280}
+    .c{background:#111827}
+    .question{padding:14px 14px;border:1px dashed var(--bni-gray-200);border-radius:12px;margin-bottom:12px}
+    .qhead{font-weight:600;margin-bottom:10px}
+    .scale{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .scale label{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--bni-gray-200);padding:6px 10px;border-radius:10px;cursor:pointer}
+    .scale input{accent-color:var(--bni-red)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    button{cursor:pointer;border:0;border-radius:12px;padding:10px 14px;font-weight:700}
+    .primary{background:var(--bni-red);color:#fff}
+    .primary:hover{background:var(--bni-red-700)}
+    .ghost{background:#fff;border:1px solid var(--bni-gray-200);color:var(--bni-gray-900)}
+    .success{background:var(--ok);color:#fff}
+    .warn{background:var(--warn);color:#fff}
+    .muted{color:var(--bni-gray-500);font-size:13px}
+    .results{display:none}
+    .bars{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0}
+    .bar{height:32px;background:var(--bg);border:1px solid var(--bni-gray-200);border-radius:999px;overflow:hidden;display:flex;align-items:center}
+    .bar > div{height:100%;display:flex;align-items:center;padding-left:10px;color:#fff;font-weight:700}
+    .bar .D{background:var(--bni-red)}
+    .bar .I{background:#C84A5D}
+    .bar .S{background:#6B7280}
+    .bar .C{background:#111827}
+    .kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+    .kpi .pill{background:var(--bg);border:1px solid var(--bni-gray-200);border-radius:14px;padding:10px 12px}
+    .kpi .pill b{color:var(--bni-red)}
+    footer{padding:16px;color:var(--bni-gray-500);text-align:center}
+    details{background:var(--bg);border:1px solid var(--bni-gray-200);border-radius:12px;padding:10px 12px}
+    summary{cursor:pointer;font-weight:700;color:var(--bni-red)}
+    .small{font-size:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Teste DISC – BNI Edition</h1>
+    <p class="subtitle">Autodiagnóstico rápido com cores BNI (versão web, 100% offline)</p>
+    <span class="badge">V1.0</span>
+  </header>
+
+  <main class="container">
+    <div class="content grid">
+      <section class="card">
+        <h2>Instruções</h2>
+        <p>Classifica cada afirmação de <b>1</b> (discordo totalmente) a <b>5</b> (concordo totalmente). Responde com base no teu comportamento mais natural.</p>
+        <div class="legend">
+          <span><i class="dot d"></i> D – Dominante</span>
+          <span><i class="dot i"></i> I – Influente</span>
+          <span><i class="dot s"></i> S – Estável</span>
+          <span><i class="dot c"></i> C – Cauteloso</span>
+        </div>
+
+        <form id="discForm"></form>
+
+        <div class="actions">
+          <button class="primary" id="calcBtn" type="button">Calcular resultados</button>
+          <button class="ghost" id="clearBtn" type="button">Limpar respostas</button>
+          <button class="ghost" id="saveBtn" type="button">Guardar no dispositivo</button>
+        </div>
+        <p class="muted small">As respostas não saem do teu dispositivo. Podes imprimir os resultados na secção ao lado.</p>
+      </section>
+
+      <aside class="card" id="resultCard">
+        <h2>Resultados</h2>
+        <div class="results" id="results">
+          <div class="kpi">
+            <div class="pill"><div>Perfil principal</div><div><b id="mainProfile">—</b></div></div>
+            <div class="pill"><div>Combinação (Top 2)</div><div><b id="combo">—</b></div></div>
+          </div>
+
+          <div class="bars">
+            <div class="bar"><div class="D" id="barD" style="width:0%">D <span id="dPct">0%</span></div></div>
+            <div class="bar"><div class="I" id="barI" style="width:0%">I <span id="iPct">0%</span></div></div>
+            <div class="bar"><div class="S" id="barS" style="width:0%">S <span id="sPct">0%</span></div></div>
+            <div class="bar"><div class="C" id="barC" style="width:0%">C <span id="cPct">0%</span></div></div>
+          </div>
+
+          <details open>
+            <summary>Explicação do perfil</summary>
+            <div id="explainMain" style="margin-top:8px"></div>
+          </details>
+
+          <details style="margin-top:10px">
+            <summary>Perfis combinados (Top 2)</summary>
+            <div id="explainCombo" style="margin-top:8px"></div>
+          </details>
+
+          <div class="actions" style="margin-top:12px">
+            <button class="success" onclick="window.print()" type="button">Imprimir / PDF</button>
+            <button class="warn" id="resetBtn" type="button">Recomeçar</button>
+          </div>
+        </div>
+        <p id="emptyState" class="muted">Preenche o questionário e clica <b>Calcular resultados</b> para veres aqui a tua análise.</p>
+      </aside>
+    </div>
+
+    <div class="content">
+      <details>
+        <summary>O que significam os estilos DISC</summary>
+        <div id="baseDescriptions" style="margin-top:10px"></div>
+      </details>
+    </div>
+
+    <footer>
+      <div>© 2025 – Teste DISC (edição para BNI). Este teste tem propósito formativo e não substitui avaliações psicométricas validadas.</div>
+    </footer>
+  </main>
+
+  <script>
+    /********************
+     * Dados do questionário
+     ********************/
+    const ITEMS = [
+      // D – Dominante
+      { dim:"D", text:"Tomo decisões rapidamente, mesmo com informação limitada." },
+      { dim:"D", text:"Gosto de assumir o comando em projetos." },
+      { dim:"D", text:"Sou direto(a) e objetivo(a) ao comunicar." },
+      { dim:"D", text:"Tenho elevada tolerância a riscos e desafios." },
+      // I – Influente
+      { dim:"I", text:"Gosto de inspirar e motivar pessoas." },
+      { dim:"I", text:"Sinto-me à vontade a falar em público ou liderar reuniões." },
+      { dim:"I", text:"Prefiro iniciar ideias novas a executar tarefas rotineiras." },
+      { dim:"I", text:"Sou otimista e transmito entusiasmo à equipa." },
+      // S – Estável
+      { dim:"S", text:"Valorizo harmonia e cooperação na equipa." },
+      { dim:"S", text:"Sou paciente e bom(boa) ouvinte." },
+      { dim:"S", text:"Prefiro ambientes de trabalho previsíveis e estáveis." },
+      { dim:"S", text:"Gosto de apoiar e servir os outros." },
+      // C – Cauteloso
+      { dim:"C", text:"Atenção ao detalhe e qualidade é essencial para mim." },
+      { dim:"C", text:"Sigo processos e normas com rigor." },
+      { dim:"C", text:"Analiso dados e prós/contras antes de decidir." },
+      { dim:"C", text:"Procuro precisão e exatidão no trabalho." }
+    ];
+
+    const BASE_DESC = {
+      D: `<p><b>D – Dominante</b>: orientado(a) a resultados, direto(a), competitivo(a) e assertivo(a).</p>
+          <ul class="small"><li><b>Forças em BNI:</b> liderar metas, destravar decisões, impulsionar crescimento.</li>
+          <li><b>Risco:</b> impaciência e pouca escuta.</li>
+          <li><b>Como equilibrar:</b> fazer check-ins, delegar, pedir feedback.</li></ul>`,
+      I: `<p><b>I – Influente</b>: carismático(a), comunicativo(a), entusiasta e persuasivo(a).</p>
+          <ul class="small"><li><b>Forças em BNI:</b> visibilidade, storytelling, ativar conexões.</li>
+          <li><b>Risco:</b> dispersão e pouca execução.</li>
+          <li><b>Como equilibrar:</b> criar rotinas e compromissos com prazos.</li></ul>`,
+      S: `<p><b>S – Estável</b>: colaborativo(a), paciente, consistente e confiável.</p>
+          <ul class="small"><li><b>Forças em BNI:</b> retenção, cultura, acompanhamento de membros.</li>
+          <li><b>Risco:</b> aversão a mudança ou confronto.</li>
+          <li><b>Como equilibrar:</b> praticar conversas difíceis e metas semanais.</li></ul>`,
+      C: `<p><b>C – Cauteloso</b>: analítico(a), preciso(a), orientado(a) a normas e qualidade.</p>
+          <ul class="small"><li><b>Forças em BNI:</b> métricas, processos e excelência.</li>
+          <li><b>Risco:</b> perfeccionismo e lentidão decisória.</li>
+          <li><b>Como equilibrar:</b> definir critérios de "bom o suficiente" e prazos claros.</li></ul>`
+    };
+
+    const COMBO_DESC = {
+      DI: "DI – Visionário(a) empreendor(a): combina coragem com influência. Move pessoas para metas ambiciosas.",
+      ID: "ID – Pioneiro(a) carismático(a): conquista pela energia e inicia movimentos.",
+      DC: "DC – Desafiante arquiteto(a): decide com firmeza e estrutura com lógica.",
+      CD: "CD – Comandante analítico(a): eleva padrão e exige precisão com foco em resultados.",
+      IS: "IS – Motivador(a) acolhedor(a): cria ambiente positivo e aproxima pessoas.",
+      SI: "SI – Facilitador(a) de relações: dá estabilidade com comunicação calorosa.",
+      SC: "SC – Suporte sistemático: garante qualidade e consistência na execução.",
+      CS: "CS – Guardião(ã) da qualidade: atento(a) ao detalhe, promove confiança.",
+      DS: "DS – Implementador(a) decisivo(a): foca em objetivos mantendo ritmo sustentável.",
+      SD: "SD – Líder ponderado(a): direciona com calma e respeito pelos processos."
+    };
+
+    /********************
+     * Render do formulário
+     ********************/
+    const formEl = document.getElementById('discForm');
+
+    function renderForm(){
+      formEl.innerHTML = '';
+      ITEMS.forEach((item, idx)=>{
+        const q = document.createElement('div');
+        q.className = 'question';
+        q.innerHTML = `
+          <div class="qhead"><span class="dot ${item.dim.toLowerCase()}"></span> ${idx+1}. ${item.text}</div>
+          <div class="scale" role="group" aria-label="Escala de 1 a 5">
+            ${[1,2,3,4,5].map(v=>`
+              <label><input type="radio" name="q${idx}" value="${v}" ${getSavedValue(idx)==v? 'checked':''}/> ${v}</label>
+            `).join('')}
+          </div>
+        `;
+        formEl.appendChild(q);
+      });
+    }
+
+    /********************
+     * Guardar/recuperar
+     ********************/
+    const KEY = 'disc_bni_v1';
+
+    function getSaved(){
+      try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; }
+    }
+    function setSaved(data){
+      try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+    }
+    function getSavedValue(idx){
+      const saved = getSaved();
+      return saved[`q${idx}`] || null;
+    }
+
+    function saveCurrent(){
+      const data = {};
+      ITEMS.forEach((_, idx)=>{
+        const chosen = document.querySelector(`input[name=q${idx}]:checked`);
+        if(chosen) data[`q${idx}`] = Number(chosen.value);
+      });
+      setSaved(data);
+    }
+
+    /********************
+     * Cálculo
+     ********************/
+    function calculate(){
+      let scores = {D:0,I:0,S:0,C:0};
+      let counts = {D:0,I:0,S:0,C:0};
+      let unanswered = [];
+      ITEMS.forEach((item, idx)=>{
+        const chosen = document.querySelector(`input[name=q${idx}]:checked`);
+        if(!chosen){ unanswered.push(idx+1); return; }
+        const val = Number(chosen.value);
+        scores[item.dim]+=val;
+        counts[item.dim]++;
+      });
+      if(unanswered.length){
+        alert('Faltam respostas nas questões: '+unanswered.join(', '));
+        return null;
+      }
+      // Percentagens normalizadas (0-100)
+      const pct = {};
+      Object.keys(scores).forEach(dim=>{
+        pct[dim] = Math.round( (scores[dim] / (counts[dim]*5)) * 100 );
+      });
+      return {scores, pct};
+    }
+
+    function sortDimsByPct(pct){
+      return Object.entries(pct).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+    }
+
+    function renderResults(model){
+      const {pct} = model;
+      // barras
+      const setBar = (id,val,spanId)=>{
+        const el = document.getElementById(id);
+        el.style.width = Math.max(4,val)+"%"; // largura mínima visível
+        document.getElementById(spanId).textContent = val+"%";
+      };
+      setBar('barD', pct.D,'dPct');
+      setBar('barI', pct.I,'iPct');
+      setBar('barS', pct.S,'sPct');
+      setBar('barC', pct.C,'cPct');
+
+      // Top 1 e Top 2
+      const order = sortDimsByPct(pct);
+      const main = order[0];
+      const second = order[1];
+      document.getElementById('mainProfile').textContent = `${main} (${pct[main]}%)`;
+
+      // Combinação
+      const comboKey = `${main}${second}`;
+      document.getElementById('combo').textContent = comboKey;
+
+      // Explicações
+      document.getElementById('explainMain').innerHTML = BASE_DESC[main];
+      document.getElementById('explainCombo').innerHTML = `<p>${COMBO_DESC[comboKey] || 'Combinação menos comum. Usa os pontos fortes de ambos os estilos.'}</p>`;
+
+      // Visibilidade
+      document.getElementById('results').style.display = 'block';
+      document.getElementById('emptyState').style.display = 'none';
+    }
+
+    /********************
+     * Base descriptions section
+     ********************/
+    function renderBaseDescriptions(){
+      const root = document.getElementById('baseDescriptions');
+      root.innerHTML = ['D','I','S','C'].map(k=>`<div class="card" style="border:none;padding:10px 0">${BASE_DESC[k]}</div>`).join('');
+    }
+
+    // Eventos
+    document.getElementById('calcBtn').addEventListener('click',()=>{
+      saveCurrent();
+      const model = calculate();
+      if(model) renderResults(model);
+    });
+    document.getElementById('clearBtn').addEventListener('click',()=>{
+      localStorage.removeItem(KEY);
+      renderForm();
+      document.getElementById('results').style.display='none';
+      document.getElementById('emptyState').style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+    document.getElementById('saveBtn').addEventListener('click',()=>{
+      saveCurrent();
+      alert('Respostas guardadas neste dispositivo.');
+    });
+    document.getElementById('resetBtn').addEventListener('click',()=>{
+      if(confirm('Queres mesmo recomeçar? Isto limpa respostas e resultados.')){
+        localStorage.removeItem(KEY);
+        renderForm();
+        document.getElementById('results').style.display='none';
+        document.getElementById('emptyState').style.display='block';
+      }
+    });
+
+    // Inicializar
+    renderForm();
+    renderBaseDescriptions();
+  </script>
+</body>
+</html>
